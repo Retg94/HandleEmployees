@@ -26,7 +26,7 @@ namespace EmployeeApp
                         Console.ReadKey();
                         break;
                     case 0:
-                        Console.WriteLine("Exit program..");
+                        Console.WriteLine("Exit program....");
                         Console.ReadKey();
                         Running = false;
                         break;
