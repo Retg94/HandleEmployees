@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Library
+namespace Library.Employees
 {
-    class Class2
+    class Class1
     {
     }
 }
