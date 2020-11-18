@@ -14,6 +14,24 @@ namespace Library
             Console.WriteLine("-- ADDING NEW EMPLOYEE --");
             Console.WriteLine("Write new ID: ");
             string tmpId = Console.ReadLine();
+            bool idControll = false;
+            foreach(var person in ListOfEmployees)
+            {
+                if (tmpId == person.Id)
+                    idControll = true;
+            }
+            while(idControll)
+            {
+                Console.WriteLine("ID already taken, please write an uniqe ID.");
+                Console.WriteLine("Write new ID: ");
+                tmpId = Console.ReadLine();
+                idControll = false;
+                foreach (var person in ListOfEmployees)
+                {
+                    if (tmpId == person.Id)
+                        idControll = true;
+                }
+            }
             Console.WriteLine("Write new password: ");
             string tmpPassword = Console.ReadLine();
             Console.WriteLine("Write name of employee: ");
@@ -30,16 +48,45 @@ namespace Library
             ListOfEmployees.Add(newEmployee);
         }
 
+        public static void RemoveEmploye()
+        {
+            Console.Clear();
+            Console.WriteLine("-- Removing a employee --");
+            int tmp = 0;
+            foreach(var person in ListOfEmployees)
+            {
+                Console.WriteLine($"[{tmp}] ID:{person.Id}, Name:{person.Name}");
+                tmp++;
+            }
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine("Write the number infront of the employee you want to remove: ");
+            int choice = Verify.StringToInt(Console.ReadLine());
+            if(choice>=0 && choice<ListOfEmployees.Count)
+            {
+                ListOfEmployees.RemoveAt(choice);
+                Console.WriteLine("Employee removed. Press any key to return to menu.");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Invalid input, press any key to return to menu..");
+                Console.ReadKey();
+            }
+            
+
+        }
+
         public static void ShowEmployees()
         {
             Console.Clear();
             foreach(var item in ListOfEmployees)
             {
-                Console.WriteLine(item.Id);
-                Console.WriteLine(item.Password);
-                Console.WriteLine(item.Name);
-                Console.WriteLine(item.Adress);
-                Console.WriteLine(item.IsAdmin);
+                Console.WriteLine($"Id: {item.Id}");
+                Console.WriteLine($"Password: {item.Password}");
+                Console.WriteLine($"Name: {item.Name}");
+                Console.WriteLine($"Adress: {item.Adress}");
+                Console.WriteLine($"Adminstatus: {item.IsAdmin}");
+                Console.WriteLine();
             }
         }
         public static void ReadFromFile()

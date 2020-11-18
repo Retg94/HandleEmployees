@@ -47,8 +47,9 @@ namespace EmployeeApp
             Console.WriteLine("ADMIN Mainmenu");
             Console.WriteLine("0. Exit.");
             Console.WriteLine("1. Add new employee");
-            Console.WriteLine("2. Show all employees");
-            Console.WriteLine("3. Save employeelist to file");
+            Console.WriteLine("2. Remove employee");
+            Console.WriteLine("3. Show all employees");
+            Console.WriteLine("4. Save employeelist to file");
             int input = Verify.StringToInt(Console.ReadLine());
             switch(input)
             {
@@ -58,10 +59,13 @@ namespace EmployeeApp
                     Console.ReadKey();
                     break;
                 case 2:
+                    HandleEmployees.RemoveEmploye();
+                    break;
+                case 3:
                     HandleEmployees.ShowEmployees();
                     Console.ReadKey();
                     break;
-                case 3:
+                case 4:
                     HandleEmployees.SaveListToFile();
                     break;
                 case 0:
