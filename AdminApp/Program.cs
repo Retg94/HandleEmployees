@@ -72,6 +72,7 @@ namespace AdminApp
                     break;
                 case 4:
                     UserId = HandleList.EditEmployee(IsAdmin, UserId);
+                    Console.WriteLine("Employee updated.");
                     break;
                 case 5:
                     HandleList.SaveListToFile();

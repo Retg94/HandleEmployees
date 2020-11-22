@@ -272,17 +272,6 @@ namespace Library
             }
             PressAnyKeyToContinue();
         }
-        public static int GetIndexOfId(string id)
-        {
-            int index = 0;
-            foreach(var item in ListOfEmployees)
-            {
-                if (item.Id == id)
-                    break;
-                index++;
-            }
-            return index;
-        }
         public static string EditOwnInfo(string id, bool isAdmin)
         {
             string tmpId = id;
