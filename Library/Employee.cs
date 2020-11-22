@@ -15,10 +15,10 @@ namespace Library
             IsAdmin = isAdmin;
         }
 
-        public string Id { get; }
-        public string Password { get; }
-        public string Name { get; }
-        public string Adress { get; }
-        public bool IsAdmin { get; }
+        public string Id { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public string Adress { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

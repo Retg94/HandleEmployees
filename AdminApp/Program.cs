@@ -1,14 +1,16 @@
 ﻿using System;
 using Library;
 
-namespace EmployeeApp
+namespace AdminApp
 {
     class Program
     {
         public static bool Running = false;
+        public static bool IsAdmin = false;
+        public static string UserId;
         static void Main(string[] args)
         {
-            HandleEmployees.ReadFromFile();
+            HandleList.ReadFromFile();
             LogIn();
             while(Running)
             {
@@ -21,16 +23,18 @@ namespace EmployeeApp
             while(!logIn)
             {
                 Console.Clear();
-                Console.WriteLine("-- Log into Adminapplication --");
+                Console.WriteLine($"-- Log into Adminapplication -- Current user: {UserId}");
                 Console.WriteLine("Enter ID: ");
                 string tmpId = Console.ReadLine();
                 Console.WriteLine("Enter password: ");
                 string tmpPassword = Console.ReadLine();
-                logIn = HandleEmployees.AdminLogIn(tmpId, tmpPassword);
+                logIn = HandleList.AdminLogIn(tmpId, tmpPassword);
                 if(logIn)
                 {
                     Console.WriteLine("ID and Password correct. Press any key to continue to menu.");
                     Running = true;
+                    IsAdmin = true;
+                    UserId = tmpId;
                     Console.ReadKey();
                 }
                 else
@@ -47,26 +51,32 @@ namespace EmployeeApp
             Console.WriteLine("ADMIN Mainmenu");
             Console.WriteLine("0. Exit.");
             Console.WriteLine("1. Add new employee");
-            Console.WriteLine("2. Remove employee");
+            Console.WriteLine("2. Remove an employee");
             Console.WriteLine("3. Show all employees");
-            Console.WriteLine("4. Save employeelist to file");
+            Console.WriteLine("4. Edit an employee");
+            Console.WriteLine("5. Save employeelist to file");
             int input = Verify.StringToInt(Console.ReadLine());
             switch(input)
             {
                 case 1:
-                    HandleEmployees.AddNewEmployee();
+                    HandleList.AddNewEmployee();
                     Console.WriteLine("Added new employee..");
                     Console.ReadKey();
                     break;
                 case 2:
-                    HandleEmployees.RemoveEmploye();
+                    HandleList.RemoveEmploye();
                     break;
                 case 3:
-                    HandleEmployees.ShowEmployees();
+                    HandleList.ShowEmployeesForAdmin();
                     Console.ReadKey();
                     break;
                 case 4:
-                    HandleEmployees.SaveListToFile();
+                    UserId = HandleList.EditEmployee(IsAdmin, UserId);
+                    break;
+                case 5:
+                    HandleList.SaveListToFile();
+                    Console.WriteLine("Employeelist saved. Press any key to continue.");
+                    Console.ReadKey();
                     break;
                 case 0:
                     Console.WriteLine("Exit program....");
