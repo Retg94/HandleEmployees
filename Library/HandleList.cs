@@ -61,6 +61,17 @@ namespace Library
             }
             return tmpAdress;
         }
+        private static int VerifySalary(string tmpSalary)
+        {
+            bool isOkay = int.TryParse(tmpSalary, out int result);
+            while(!isOkay || result<0 )
+            {
+                Console.WriteLine("Invalid input, write salary again. It must be a number without decimal: ");
+
+                isOkay = int.TryParse(Console.ReadLine(), out result);
+            }
+            return result;
+        }
         public static void AddNewEmployee()
         {
             Console.Clear();
@@ -84,11 +95,21 @@ namespace Library
 
             Console.WriteLine("Is this employee an Admin? Yes/No");
             string tmpAdmin = Console.ReadLine().ToLower();
-            bool tmpBool = false;
+            bool tmpBoolAdm = false;
             if (tmpAdmin == "yes")
-                tmpBool = true;
+                tmpBoolAdm = true;
 
-            var newEmployee = new Employee(tmpId, tmpPassword, tmpName, tmpAdress, tmpBool);
+            Console.WriteLine("Write the monthly salary in SEK: ");
+            string tmpSalary = Console.ReadLine();
+            int tmpSalaryInt = VerifySalary(tmpSalary);
+
+            Console.WriteLine("Is this employee an Economist? Yes/No");
+            string tmpEconomist = Console.ReadLine().ToLower();
+            bool tmpBoolEco = false;
+            if (tmpEconomist == "yes")
+                tmpBoolEco = true;
+
+            var newEmployee = new Employee(tmpId, tmpPassword, tmpName, tmpAdress, tmpBoolAdm, tmpSalaryInt, tmpBoolEco);
             ListOfEmployees.Add(newEmployee);
         }
         private static void WriteList()
@@ -96,7 +117,7 @@ namespace Library
             int tmp = 0;
             foreach (var person in ListOfEmployees)
             {
-                Console.WriteLine($"[{tmp}] ID:{person.Id}, Name:{person.Name}");
+                Console.WriteLine($"[{tmp}] Name:{person.Name}, Adress:{person.Adress}, Salary:{person.Salary}");
                 tmp++;
             }
             Console.WriteLine("-----------------------------------------------------------");
@@ -170,14 +191,39 @@ namespace Library
             {
                 foreach(var item in ListOfEmployees)
                 {
-                    if(index == choice)
+                    if(!isAdmin)
                     {
-                        WriteEmployeeInfo(item);
-                        Console.WriteLine("What do you want to edit? Id/Password/Name/Adress/Adminstatus");
-                        string userInput = Console.ReadLine().ToLower();
-                        EditInfoSwitchCase(userInput, item, isAdmin, tmpId);
+                        if (index == choice)
+                        {
+                            WriteEmployeeInfo(item);
+                            Console.WriteLine("Do you really want to change salary? yes/no");
+                            if (Console.ReadLine().ToLower() != "yes")
+                            {
+                                Console.WriteLine("Returning to menu...");
+                                PressAnyKeyToContinue();
+                                return tmpId;
+                            }
+                            else
+                                Console.WriteLine("Write new salary (kr/month): ");
+                            int tmpSalary = VerifySalary(Console.ReadLine());
+                            item.Salary = tmpSalary;
+                            Console.WriteLine($"Salary changed to {item.Salary}");
+                            PressAnyKeyToContinue();
+
+                        }
+                        index++;
                     }
-                    index++;
+                    else
+                    {
+                        if (index == choice)
+                        {
+                            WriteEmployeeInfo(item);
+                            Console.WriteLine("What do you want to edit? Id/Password/Name/Adress/Adminstatus");
+                            string userInput = Console.ReadLine().ToLower();
+                            EditInfoSwitchCase(userInput, item, isAdmin, tmpId);
+                        }
+                        index++;
+                    }
                 }
             }
             else
@@ -231,6 +277,8 @@ namespace Library
             Console.WriteLine($"Name: {item.Name}");
             Console.WriteLine($"Adress: {item.Adress}");
             Console.WriteLine($"Adminstatus: {item.IsAdmin}");
+            Console.WriteLine($"Salary: {item.Salary}");
+            Console.WriteLine($"Economiststatus: {item.IsEconomist}");
             Console.WriteLine();
         }
         public static void ShowEmployeesForAdmin()
@@ -242,6 +290,20 @@ namespace Library
             }
             PressAnyKeyToContinue();
         }
+        public static void ShowEmployeesForEconomist()
+        {
+            Console.Clear();
+            foreach (var item in ListOfEmployees)
+            {
+                Console.WriteLine($"Name: {item.Name}");
+                Console.WriteLine($"Adress: {item.Adress}");
+                Console.WriteLine($"Salary: {item.Salary} kr/month");
+                Console.WriteLine($"Adminstatus: {item.IsAdmin}");
+                Console.WriteLine($"Economiststatus: {item.IsEconomist}");
+                Console.WriteLine();
+            }
+            PressAnyKeyToContinue();
+        }
         public static void ShowEmployeesForEmployee()
         {
             Console.Clear();
@@ -250,6 +312,7 @@ namespace Library
                 Console.WriteLine($"Name: {item.Name}");
                 Console.WriteLine($"Adress: {item.Adress}");
                 Console.WriteLine($"Adminstatus: {item.IsAdmin}");
+                Console.WriteLine($"Economiststatus: {item.IsEconomist}");
                 Console.WriteLine();
             }
             PressAnyKeyToContinue();
@@ -267,6 +330,8 @@ namespace Library
                     Console.WriteLine($"Name: {item.Name}");
                     Console.WriteLine($"Adress: {item.Adress}");
                     Console.WriteLine($"Adminstatus: {item.IsAdmin}");
+                    Console.WriteLine($"Salary: {item.Salary} kr/month");
+                    Console.WriteLine($"Economiststatus: {item.IsEconomist}");
                     Console.WriteLine();
                 }
             }
@@ -304,7 +369,7 @@ namespace Library
             {
                 using (var sw = new StreamWriter(filePath))
                 {
-                    sw.WriteLine("Admin" + ";" + "1234" + ";" + "Admin Adminsson" + ";" + "Admingatan 123" + ";" + true);                 
+                    sw.WriteLine("Admin" + ";" + "1234" + ";" + "Admin Adminsson" + ";" + "Admingatan 123" + ";" + true + ";" + "99000" + ";" + true);                 
                 }
             }
             using (var reader = new StreamReader(filePath))
@@ -314,9 +379,12 @@ namespace Library
                     var line = reader.ReadLine();
                     var values = line.Split(';');
                     bool tmpBool = false;
-                    if(values[4].ToLower() == "true")
+                    bool tmpBoolTwo = false;
+                    if (values[4].ToLower() == "true")
                         tmpBool = true;
-                    ListOfEmployees.Add(new Employee(values[0], values[1], values[2], values[3], tmpBool));
+                    if (values[6].ToLower() == "true")
+                        tmpBoolTwo = true;
+                    ListOfEmployees.Add(new Employee(values[0], values[1], values[2], values[3], tmpBool, int.Parse(values[5]), tmpBoolTwo));
 
                 }
             }
@@ -330,7 +398,7 @@ namespace Library
             {
                 foreach (var person in ListOfEmployees)
                 {
-                    swOverwrite.WriteLine(person.Id + ";" + person.Password + ";" + person.Name + ";" + person.Adress + ";" + person.IsAdmin);
+                    swOverwrite.WriteLine(person.Id + ";" + person.Password + ";" + person.Name + ";" + person.Adress + ";" + person.IsAdmin + ";" + person.Salary + ";" + person.IsEconomist);
                 }
             }
         }
@@ -344,7 +412,16 @@ namespace Library
             }
             return logIn;
         }
-
+        public static bool EcomomistLogIn(string Id, string Password)
+        {
+            bool logIn = false;
+            foreach (var person in ListOfEmployees)
+            {
+                if (person.Id == Id && person.Password == Password && person.IsEconomist)
+                    logIn = true;
+            }
+            return logIn;
+        }
         public static bool EmployeeLogIn(string Id, string Password)
         {
             bool logIn = false;
